@@ -90,7 +90,7 @@ void LoRa_getConfiguration(Lora_Configuration_t *config)
 	serialClose(global_fd);
 	if ((global_fd = serialOpen ("/dev/ttyAMA0", LORA_BAUD_RATE_CONFIG)) < 0)
 	{
-		Error_Handler();
+		Error_Handler("serialOpen");
 	}
 	for(int i=0; i < 3; i++)
 	{
@@ -123,7 +123,7 @@ void LoRa_setConfiguration(Lora_Configuration_t config, PROGRAM_COMMAND save_typ
 		serialClose(global_fd);
 		if ((global_fd = serialOpen ("/dev/ttyAMA0", LORA_BAUD_RATE_CONFIG)) < 0)
 		{
-			Error_Handler();
+			Error_Handler("serialOpen");
 		}
 		for(int i=0; i < sizeof(Lora_Configuration_t); i++)
 		{
@@ -138,7 +138,7 @@ void LoRa_setConfiguration(Lora_Configuration_t config, PROGRAM_COMMAND save_typ
 	case READ_CONFIGURATION:
 	case READ_MODULE_VERSION:
 	case WRITE_RESET_MODULE:
-		Error_Handler();
+		Error_Handler("serialOpen");
 	}
 	piUnlock(0);
   LoRa_setMode(MODE_0_NORMAL);
@@ -155,11 +155,6 @@ void LoRa_sendFixedMessage(uint8_t ADDH, uint8_t ADDL, uint8_t Channel, uint8_t 
 	UART_Add_To_TxQueue((uint8_t *)&fixed_message, size+3);
 }
 
-
-// void LoRa_sendBroadcastFixedMessage(uint8_t Channel, uint8_t *message)
-// {
-//   LoRa_sendFixedMessage(BROADCAST_ADDRESS, BROADCAST_ADDRESS, Channel, message);
-// }
 
 
 
@@ -179,23 +174,6 @@ unsigned long LoRa_decrypt(unsigned long data)
 }
 */
 
-
-
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  while (1)
-  {
-      fprintf (stderr, "Error %s\n", strerror (errno));
-      delay(2000);
-  }
-  /* USER CODE END Error_Handler_Debug */
-}
 
 
 

@@ -163,12 +163,11 @@ typedef enum
 }TRANSMISSION_POWER;
 
 
-
-void Error_Handler(void);
 void LoRa_Init(void);
 void LoRa_getConfiguration(Lora_Configuration_t *config);
 void LoRa_setConfiguration(Lora_Configuration_t config, PROGRAM_COMMAND save_type);
 void LoRa_sendFixedMessage(uint8_t ADDH, uint8_t ADDL, uint8_t Channel, uint8_t *message);
 void LoRa_sendBroadcastFixedMessage(uint8_t Channel, uint8_t *message);
+
 
 #endif /* LORA_H_ */

@@ -1,5 +1,6 @@
 #include "mqtt.h"
-
+#include "uart.h"
+#include "lora.h"
 
 #define TOPIC	"test_topic"
 #define PAYLOAD	"Hello I'm Raspberry Pi 4B!"
@@ -18,11 +19,6 @@ volatile uint16_t mqtt_topic_control_timer_flag = 0;
 
 volatile uint16_t MQTT_Rx_Count = 0;
 MQTT_Message MQTT_Rx_Buffer[20];
-
-
-extern MQTT_LED_Control_OnOff_t test_onoff;
-extern MQTT_LED_Control_Dimming_t test_dimming;
-extern MQTT_LED_Control_SetTime_t test_settime;
 
 static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
@@ -93,22 +89,7 @@ static void onSubscribeFailure(void* context, MQTTAsync_failureData* response)
 static void onConnect(void* context, MQTTAsync_successData* response)
 {
 	MQTTAsync client = (MQTTAsync)context;
-	MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
-	int rc;
-
-	MQTT_Transmit(TOPIC, PAYLOAD);
-
 	MQTT_Connect_flag = 1;
-
-	printf("Subscribing to topic %s\nfor client %s using QoS%d\n\n", TOPIC, CLIENTID, QOS);
-	opts.onSuccess = onSubscribe;
-	opts.onFailure = onSubscribeFailure;
-	opts.context = client;
-	if ((rc = MQTTAsync_subscribe(client, "LED_Control/#", QOS, &opts)) != MQTTASYNC_SUCCESS)
-	{
-		printf("Failed to start subscribe, return code %d\n", rc);
-		Error_Handler("MQTTAsync_subscribe");
-	}
 }
 
 static void onConnectFailure(void* context, MQTTAsync_failureData* response)
@@ -162,7 +143,23 @@ void MQTT_Init()
 		Error_Handler("MQTTAsync_connect");
 	}
 
+	/* Chươn trình sẽ bị treo cho đến khi kết nối thành công */
+	while(MQTT_Connect_flag != 1);
 	
+	MQTTAsync_responseOptions resp_opts = MQTTAsync_responseOptions_initializer;
+
+	MQTT_Transmit(TOPIC, PAYLOAD);
+
+	printf("Subscribing to topic %s\nfor client %s using QoS%d\n\n", "LED_Control/#", CLIENTID, QOS);
+	resp_opts.onSuccess = onSubscribe;
+	resp_opts.onFailure = onSubscribeFailure;
+	resp_opts.context = client_handler;
+	if ((rc = MQTTAsync_subscribe(client_handler, "LED_Control/#", QOS, &resp_opts)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to start subscribe, return code %d\n", rc);
+		Error_Handler("MQTTAsync_subscribe");
+	}
+
 }
 
 
@@ -193,6 +190,7 @@ void MQTT_LED_Data_Transmit(MQTT_LED_Data_t LED_Data)
 	sprintf(buffer, "%d %d %d %d %d", LED_Data.node_addr, LED_Data.timestamp, LED_Data.on_off,\
 	 							   LED_Data.dimming, LED_Data.current_sensor);
 	MQTT_Transmit(MQTT_TOPIC_LED_DATA, buffer);
+	
 }
 
 static void MQTT_Split_String(char *in_str, int out_array_value[], int *out_len)
@@ -224,11 +222,13 @@ void MQTT_Task_Receive(void)
 			int arr_temp[10], arr_len;
 			MQTT_Split_String(MQTT_Rx_Buffer[id].payload, arr_temp, &arr_len);
 
-			test_onoff.node_addr = arr_temp[0];
-			test_onoff.on_off = arr_temp[1];
-			
+			MQTT_LED_Control_OnOff_t on_off_send;
+			on_off_send.node_addr = arr_temp[0];
+			on_off_send.on_off = arr_temp[1];
+			LORA_Send_Control_OnOff(on_off_send);
+
 			char temp[100]="";
-			sprintf(temp, "On_Off success\nDia chi: %d\nOnOff: %d", test_onoff.node_addr,test_onoff.on_off);
+			sprintf(temp, "On_Off success. Dia chi: %d. OnOff: %d", on_off_send.node_addr,on_off_send.on_off);
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\nonoff\n");
@@ -239,11 +239,13 @@ void MQTT_Task_Receive(void)
 			int arr_temp[10], arr_len;
 			MQTT_Split_String(MQTT_Rx_Buffer[id].payload, arr_temp, &arr_len);
 
-			test_dimming.node_addr = arr_temp[0];
-			test_dimming.dimming = arr_temp[1];
+			MQTT_LED_Control_Dimming_t dimming_send;
+			dimming_send.node_addr = arr_temp[0];
+			dimming_send.dimming = arr_temp[1];
+			LORA_Send_Control_Dimming(dimming_send);
 
 			char temp[100]="";
-			sprintf(temp, "Dimming success\nDia chi: %d\nDimming: %d%%", test_dimming.node_addr,test_dimming.dimming);
+			sprintf(temp, "Dimming success. Dia chi: %d. Dimming: %d%%", dimming_send.node_addr,dimming_send.dimming);
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\ndimming\n");
@@ -253,14 +255,16 @@ void MQTT_Task_Receive(void)
 			int arr_temp[10], arr_len;
 			MQTT_Split_String(MQTT_Rx_Buffer[id].payload, arr_temp, &arr_len);
 
-			test_settime.node_addr = arr_temp[0];
-			test_settime.time = arr_temp[1];
-			test_settime.on_off = arr_temp[2];
-			test_settime.dimming = arr_temp[3];
+			MQTT_LED_Control_SetTime_t settime_send;
+			settime_send.node_addr = arr_temp[0];
+			settime_send.time = arr_temp[1];
+			settime_send.on_off = arr_temp[2];
+			settime_send.dimming = arr_temp[3];
+			LORA_Send_Control_Set_Time(settime_send);
 
 			char temp[100]="";
-			sprintf(temp, "Set_Time success\nDia chi: %d\nThoi gian: %d\nOnOff: %d\nDimming: %d%%",\
-			 test_settime.node_addr,test_settime.time,test_settime.on_off,test_settime.dimming);
+			sprintf(temp, "Set_Time success. Dia chi: %d. Thoi gian: %d. OnOff: %d. Dimming: %d%%",\
+			 settime_send.node_addr,settime_send.time,settime_send.on_off,settime_send.dimming);
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\nsettime\n");

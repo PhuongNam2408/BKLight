@@ -67,5 +67,6 @@ void MQTT_Init();
 void MQTT_Transmit(uint8_t *topic, uint8_t *payload);
 void MQTT_LED_Data_Transmit(MQTT_LED_Data_t LED_Data);
 void MQTT_Task_Receive(void);
+void Error_Handler(char *name_fail);
 
 #endif /* MQTT_H_ */

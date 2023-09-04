@@ -7,7 +7,7 @@
 
 #include "uart.h"
 #include "lora.h"
-#include "mqtt.h"
+#include <time.h>
 
 // Receive data buffer
 uint8_t UART_Rx_buffer[UART_MAX_NUM_BYTE];
@@ -19,9 +19,17 @@ uint8_t UART_TxQueue[UART_MAX_NUM_BYTE];
 volatile uint8_t UART_tx_index = 0;
 
 extern int global_fd;
+
+/* Flag sử dụng để reset số lần đọc file AMA0 */
 extern int global_fd_flag;
 
 extern lora_end_node_t lora_end_node[];
+
+/* Các biến sử dụng cho hàm Parse */
+static uint16_t source_address;
+static read_state_t read_state;
+static uint8_t key, length, crc, data_count;
+static uint8_t value[LORA_MAX_SIZE_PACKET];
 
 /**************************************************************************//**
  * @brief
@@ -34,11 +42,17 @@ PI_THREAD (UART_Rx_Thread)
 		if(digitalRead(16) == 0)
 		{
 			piLock(0);
+			int rx_thread_count = 0;
 			printf("start thread %d", UART_RxCount);
 			while(serialDataAvail(global_fd) == 0);
-			while(serialDataAvail(global_fd))
+			loop: while(serialDataAvail(global_fd))
 			{
 				UART_Rx_buffer[UART_RxCount++] = serialGetchar(global_fd);
+			}
+			rx_thread_count++;
+			if(rx_thread_count < 1000)
+			{
+				goto loop;
 			}
 			printf("end thread %d", UART_RxCount);
 			global_fd_flag = 1;
@@ -72,18 +86,111 @@ void UART_Add_To_TxQueue(uint8_t* data, uint16_t length)
   }
   else
   {
-	Error_Handler();
+	Error_Handler("UART_Add_To_TxQueue");
   }
 }
 
-static uint16_t source_address;
-static read_state_t read_state;
-static uint8_t key, length, crc, data_count;
-static uint8_t value[LORA_MAX_SIZE_PACKET];
+
+
+
+static void LORA_Send_Synctime(void)
+{
+	uint32_t time_now = (uint32_t) time(NULL);
+
+	uint8_t synctime_send[100];
+	synctime_send[0] = (uint8_t) (source_address >> 8);
+	synctime_send[1] = (uint8_t) (source_address & 0xFF);
+	synctime_send[2] = (uint8_t) LORA_CHANNEL;
+	synctime_send[3] = GATE_WAY_SYNC1;
+	synctime_send[4] = GATE_WAY_SYNC2;
+	synctime_send[5] = (uint8_t) (GATE_WAY_ADDR >> 8);
+	synctime_send[6] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
+	synctime_send[7] = KEY_SYNCTIME;
+	synctime_send[8] = LENGTH_SYNCTIME;
+
+	memcpy(&synctime_send[8], &time_now, LENGTH_SYNCTIME);
+	synctime_send[8+LENGTH_SYNCTIME] = CalCRC(&synctime_send[8], LENGTH_SYNCTIME);
+
+	UART_Add_To_TxQueue(synctime_send, 9+LENGTH_SYNCTIME);
+}
+
+void LORA_Send_Control_OnOff(MQTT_LED_Control_OnOff_t on_off_struct)
+{
+	uint8_t on_off_send[100];
+	on_off_send[0] = (uint8_t) (on_off_struct.node_addr >> 8);
+	on_off_send[1] = (uint8_t) (on_off_struct.node_addr & 0xFF);
+	on_off_send[2] = (uint8_t) LORA_CHANNEL;
+	on_off_send[3] = GATE_WAY_SYNC1;
+	on_off_send[4] = GATE_WAY_SYNC2;
+	on_off_send[5] = (uint8_t) (GATE_WAY_ADDR >> 8);
+	on_off_send[6] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
+	on_off_send[7] = KEY_CONTROL_ONOFF ;
+	on_off_send[8] = LENGTH_CONTROL_ONOFF;
+
+	memcpy(&on_off_send[8], &on_off_struct.on_off, LENGTH_CONTROL_ONOFF);
+	on_off_send[8+LENGTH_CONTROL_ONOFF] = CalCRC(&on_off_send[8], LENGTH_CONTROL_ONOFF);
+
+	UART_Add_To_TxQueue(on_off_send, 9+LENGTH_CONTROL_ONOFF);
+}
+
+void LORA_Send_Control_Dimming(MQTT_LED_Control_Dimming_t dimming_struct)
+{
+	uint8_t dimming_send[100];
+	dimming_send[0] = (uint8_t) (dimming_struct.node_addr >> 8);
+	dimming_send[1] = (uint8_t) (dimming_struct.node_addr & 0xFF);
+	dimming_send[2] = (uint8_t) LORA_CHANNEL;
+	dimming_send[3] = GATE_WAY_SYNC1;
+	dimming_send[4] = GATE_WAY_SYNC2;
+	dimming_send[5] = (uint8_t) (GATE_WAY_ADDR >> 8);
+	dimming_send[6] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
+	dimming_send[7] = KEY_CONTROL_DIMMING ;
+	dimming_send[8] = LENGTH_CONTROL_DIMMING;
+
+	memcpy(&dimming_send[8], &dimming_struct.dimming, LENGTH_CONTROL_DIMMING);
+	dimming_send[8+LENGTH_CONTROL_DIMMING] = CalCRC(&dimming_send[8], LENGTH_CONTROL_DIMMING);
+
+	UART_Add_To_TxQueue(dimming_send, 9+LENGTH_CONTROL_DIMMING);
+}
+
+void LORA_Send_Control_Set_Time(MQTT_LED_Control_SetTime_t settime_struct)
+{
+	uint8_t settime_send[100];
+	settime_send[0] = (uint8_t) (settime_struct.node_addr >> 8);
+	settime_send[1] = (uint8_t) (settime_struct.node_addr & 0xFF);
+	settime_send[2] = (uint8_t) LORA_CHANNEL;
+	settime_send[3] = GATE_WAY_SYNC1;
+	settime_send[4] = GATE_WAY_SYNC2;
+	settime_send[5] = (uint8_t) (GATE_WAY_ADDR >> 8);
+	settime_send[6] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
+	settime_send[7] = KEY_CONTROL_SETTIME;
+	settime_send[8] = LENGTH_CONTROL_SETTIME;
+
+	memcpy(&settime_send[8], &settime_struct.time, LENGTH_CONTROL_SETTIME);
+	settime_send[8+LENGTH_CONTROL_SETTIME] = CalCRC(&settime_send[8], LENGTH_CONTROL_SETTIME);
+
+	UART_Add_To_TxQueue(settime_send, 9+LENGTH_CONTROL_SETTIME);
+}
+
 void UART_Parse_Data(uint8_t rx_byte)
 {
 	switch (read_state)
 	{
+		case SYNC1:
+			if(rx_byte == END_NODE_SYNC1)
+			{
+				read_state = SYNC2;
+			}
+			break;
+		case SYNC2:
+			if(rx_byte == END_NODE_SYNC2)
+			{
+				read_state = ADDH;
+			}
+			else
+			{
+				read_state = SYNC1;
+			}
+			break;
 		case ADDH:
 			source_address = rx_byte << 8;
 			read_state = ADDL;
@@ -101,7 +208,14 @@ void UART_Parse_Data(uint8_t rx_byte)
 			
 		case KEY:
 			key = rx_byte;
-			read_state = LENGTH;
+			if(LORA_KEY_VALID(key) == 0)
+			{
+				read_state = SYNC1;
+			}
+			else
+			{
+				read_state = LENGTH;
+			}
 			printf("key\n");
 			fflush(stdout);
 			break;
@@ -113,6 +227,10 @@ void UART_Parse_Data(uint8_t rx_byte)
 			if(length == 0)
 			{
 				read_state = CRC;
+			}
+			else if(LORA_LENGTH_VALID(length) == 0)
+			{
+				read_state = SYNC1;
 			}
 			else
 			{
@@ -135,7 +253,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 			printf("crc\n");
 			fflush(stdout);
 			crc = rx_byte;
-			read_state = ADDH;
+			read_state = SYNC1;
 			if(crc == CalCRC(value, length))
 			{
 				switch (key)
@@ -147,7 +265,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 						{
 							if(lora_end_node[i].node_address == source_address)
 							{
-			printf("node %d\n", i);
+			printf("node %d\n", source_address);
 			fflush(stdout);
 
 								lora_end_node[i].timestamp = (value[3] << 24) | (value[2] << 16) | (value[1] << 8) | (value[0]);
@@ -159,7 +277,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 								lora_end_node[i].led_current = (value[7] << 8) | value[6];
 			printf("lora_end_node[i].led_current %d\n",lora_end_node[i].led_current );
 			fflush(stdout);
-								UART_Add_To_TxQueue((uint8_t *)&lora_end_node[i], sizeof(lora_end_node[i]));
+								//UART_Add_To_TxQueue((uint8_t *)&lora_end_node[i], sizeof(lora_end_node[i]));
 								
 								//Send_MQTT
 								MQTT_LED_Data_t LED_Data;
@@ -177,6 +295,9 @@ void UART_Parse_Data(uint8_t rx_byte)
 				case KEY_CURRENT_WARNING:
 
 					break;
+				case KEY_SYNCTIME:
+					LORA_Send_Synctime();
+					break;	
 				default:
 					break;
 				}
