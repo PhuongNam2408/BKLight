@@ -58,7 +58,8 @@ typedef struct
 typedef struct
 {
 	uint16_t node_addr;
-	uint8_t time;
+	uint8_t time_hour;
+	uint8_t time_minute;
 	uint8_t on_off;
 	uint8_t dimming; 
 }MQTT_LED_Control_SetTime_t;

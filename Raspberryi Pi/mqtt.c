@@ -257,14 +257,15 @@ void MQTT_Task_Receive(void)
 
 			MQTT_LED_Control_SetTime_t settime_send;
 			settime_send.node_addr = arr_temp[0];
-			settime_send.time = arr_temp[1];
-			settime_send.on_off = arr_temp[2];
-			settime_send.dimming = arr_temp[3];
+			settime_send.time_hour = arr_temp[1];
+			settime_send.time_minute = arr_temp[2];
+			settime_send.on_off = arr_temp[3];
+			settime_send.dimming = arr_temp[4];
 			LORA_Send_Control_Set_Time(settime_send);
 
 			char temp[100]="";
-			sprintf(temp, "Set_Time success. Dia chi: %d. Thoi gian: %d. OnOff: %d. Dimming: %d%%",\
-			 settime_send.node_addr,settime_send.time,settime_send.on_off,settime_send.dimming);
+			sprintf(temp, "Set_Time success. Dia chi: %d. Thoi gian: %d:%d. OnOff: %d. Dimming: %d%%",\
+			 settime_send.node_addr,settime_send.time_hour,settime_send.time_minute,settime_send.on_off,settime_send.dimming);
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\nsettime\n");

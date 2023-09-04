@@ -165,7 +165,7 @@ void LORA_Send_Control_Set_Time(MQTT_LED_Control_SetTime_t settime_struct)
 	settime_send[7] = KEY_CONTROL_SETTIME;
 	settime_send[8] = LENGTH_CONTROL_SETTIME;
 
-	memcpy(&settime_send[8], &settime_struct.time, LENGTH_CONTROL_SETTIME);
+	memcpy(&settime_send[8], &settime_struct.time_hour, LENGTH_CONTROL_SETTIME);
 	settime_send[8+LENGTH_CONTROL_SETTIME] = CalCRC(&settime_send[8], LENGTH_CONTROL_SETTIME);
 
 	UART_Add_To_TxQueue(settime_send, 9+LENGTH_CONTROL_SETTIME);

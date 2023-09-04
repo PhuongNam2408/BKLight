@@ -55,7 +55,7 @@ typedef struct
 #define	LENGTH_SYNCTIME	4
 #define	LENGTH_CONTROL_ONOFF	1
 #define	LENGTH_CONTROL_DIMMING	1
-#define	LENGTH_CONTROL_SETTIME	3
+#define	LENGTH_CONTROL_SETTIME	4
 
 #define LORA_LENGTH_VALID(length) (	\
 	(length) == LENGTH_END_NODE_DATA	\
