@@ -50,6 +50,7 @@ static void connlost(void *context, char *cause)
 	printf("Reconnecting\n");
 	conn_opts.keepAliveInterval = 60;
 	conn_opts.cleansession = 1;
+	MQTT_Connect_flag = 0;
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to start connect, return code %d\n", rc);
@@ -95,7 +96,19 @@ static void onConnect(void* context, MQTTAsync_successData* response)
 static void onConnectFailure(void* context, MQTTAsync_failureData* response)
 {
 	printf("Connect failed, rc %d\n", response ? response->code : 0);
-	Error_Handler("onConnectFailure");
+	MQTTAsync client = (MQTTAsync)context;
+	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
+	int rc;
+
+	printf("Reconnecting\n");
+	conn_opts.keepAliveInterval = 60;
+	conn_opts.cleansession = 1;
+	MQTT_Connect_flag = 0;
+	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to start connect, return code %d\n", rc);
+		Error_Handler("MQTTAsync_connect");
+	}
 }
 
 void onSendFailure(void* context, MQTTAsync_failureData* response)
@@ -281,6 +294,6 @@ void Error_Handler(char *name_fail)
 	{
 		printf("Error in %s\n", name_fail);
 		fflush(stdout);
-		sleep(10);
+		delay(1000);
 	}
 }
