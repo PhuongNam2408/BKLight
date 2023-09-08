@@ -3,6 +3,7 @@
 #include "mqtt.h"
 #include <time.h>
 #include <sys/ioctl.h>
+#include <fcntl.h>
 #include <linux/watchdog.h> 
 
 int global_fd;
@@ -17,6 +18,7 @@ extern uint8_t UART_Rx_buffer[UART_MAX_NUM_BYTE];
 extern volatile int MQTT_Connect_flag;
 Lora_Configuration_t global_configuration;
 int deviceHandle;
+
 
 
 void Watchdog_Init(void)
@@ -37,8 +39,22 @@ void Watchdog_Feed(void)
 {
 	ioctl(deviceHandle, WDIOC_KEEPALIVE, 0);
 }
+
+void Check_Node_Alive(void)
+{
+	uint32_t now = time(NULL);
+	for(int i = 0; i < 5; i++)
+	{
+		if(now - lora_end_node[i].timestamp > 20*60)
+		{
+			MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address);
+		}
+	}
+}
+
 int main()
 {
+	//Watchdog_Init();
 	LoRa_Init();
 
 	printf("----------------------------------------\n");
@@ -55,30 +71,20 @@ int main()
 	fflush(stdout);
 
 	MQTT_Init();
-	Watchdog_Init();
-
 	int count = 0;
-
-	MQTT_LED_Data_t hello;
-	hello.node_addr = 2;
-	hello.timestamp = (uint32_t) time(NULL);
-	hello.on_off = 0x4;
-	hello.dimming = 0x3;
-	hello.current_sensor = 0x42;
-
 	while(1)
 	{
 		if(MQTT_Connect_flag == 1)
 		{
-			Watchdog_Feed();
+			//Watchdog_Feed();
 			Task_UART_Rx();
 			Task_UART_Tx();
 			MQTT_Task_Receive();
-			if(count > 1000)
+			if(count > 100)
 			{
-				MQTT_LED_Data_Transmit(hello);
-				hello.timestamp = (uint32_t) time(NULL);
-				Watchdog_Init();
+				printf("transmit");
+				Check_Node_Alive();
+				MQTT_Send_GW_Alive();
 				count=0;
 			}
 		}

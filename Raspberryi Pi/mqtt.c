@@ -1,6 +1,7 @@
 #include "mqtt.h"
 #include "uart.h"
 #include "lora.h"
+#include <time.h>
 
 #define TOPIC	"test_topic"
 #define PAYLOAD	"Hello I'm Raspberry Pi 4B!"
@@ -13,12 +14,21 @@ volatile uint16_t MQTT_topic_tx_index = 0;
 void Error_Handler(char *name_fail);
 
 volatile int MQTT_Connect_flag = 0;
-volatile uint16_t mqtt_topic_control_onoff_flag = 0; 
-volatile uint16_t mqtt_topic_control_dimming_flag = 0; 
-volatile uint16_t mqtt_topic_control_timer_flag = 0; 
+volatile int reconnect_var = 0;
 
 volatile uint16_t MQTT_Rx_Count = 0;
 MQTT_Message MQTT_Rx_Buffer[20];
+
+
+/* STATIC FUNCTION */
+static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message);
+static void connlost(void *context, char *cause);
+static void onSend(void* context, MQTTAsync_successData* response);
+static void onSubscribe(void* context, MQTTAsync_successData* response);
+static void onSubscribeFailure(void* context, MQTTAsync_failureData* response);
+static void onConnect(void* context, MQTTAsync_successData* response);
+static void onConnectFailure(void* context, MQTTAsync_failureData* response);
+void onSendFailure(void* context, MQTTAsync_failureData* response);
 
 static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
@@ -40,23 +50,36 @@ static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsyn
 
 static void connlost(void *context, char *cause)
 {
-	MQTTAsync client = (MQTTAsync)context;
+	MQTTAsync client;
 	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 	int rc;
 
 	printf("\nConnection lost\n");
-	printf("     cause: %s\n", cause);
-
+	if (cause)
+		printf("     cause: %s\n", cause);
+	
+	if ((rc = MQTTAsync_create(&client_handler, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to create client object, return code %d\n", rc);
+		Error_Handler("MQTTAsync_create");
+	}
+	
 	printf("Reconnecting\n");
 	conn_opts.keepAliveInterval = 60;
 	conn_opts.cleansession = 1;
+	conn_opts.onSuccess = onConnect;
+	conn_opts.onFailure = onConnectFailure;
+	MQTTAsync_SSLOptions ssl = MQTTAsync_SSLOptions_initializer;
+	ssl.trustStore = "/home/pi/Desktop/BKLight/ca.crt";
+	ssl.sslVersion = MQTT_SSL_VERSION_TLS_1_2;
+	conn_opts.ssl = &ssl;
 	MQTT_Connect_flag = 0;
-	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
+	reconnect_var = 1;
+	if ((rc = MQTTAsync_connect(client_handler, &conn_opts)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to start connect, return code %d\n", rc);
-		Error_Handler("MQTTAsync_connect");
 	}
-}
+}	
 
 
 static void onSend(void* context, MQTTAsync_successData* response)
@@ -66,14 +89,15 @@ static void onSend(void* context, MQTTAsync_successData* response)
 	int rc;
 
 	printf("Message with token value %d delivery confirmed\n", response->token);
-	//opts.onSuccess = onDisconnect;
-	//opts.onFailure = onDisconnectFailure;
-	opts.context = client;
-	// if ((rc = MQTTAsync_disconnect(client, &opts)) != MQTTASYNC_SUCCESS)
-	// {
-	// 	printf("Failed to start disconnect, return code %d\n", rc);
-	// 	Error_Handler();
-	// }
+	
+	if(reconnect_var == 1)
+	{
+		if ((rc = MQTTAsync_setCallbacks(client_handler, NULL, connlost, messageArrived, NULL)) != MQTTASYNC_SUCCESS)
+		{
+			printf("Failed to set callback, return code %d\n", rc);
+		}
+		reconnect_var = 0;
+	}
 }
 
 static void onSubscribe(void* context, MQTTAsync_successData* response)
@@ -89,8 +113,22 @@ static void onSubscribeFailure(void* context, MQTTAsync_failureData* response)
 
 static void onConnect(void* context, MQTTAsync_successData* response)
 {
-	MQTTAsync client = (MQTTAsync)context;
 	MQTT_Connect_flag = 1;
+	int rc;
+	MQTTAsync client = (MQTTAsync)context;
+	printf("Get in onConnect\n");
+	MQTTAsync_responseOptions resp_opts = MQTTAsync_responseOptions_initializer;
+	
+	MQTT_Transmit(TOPIC, PAYLOAD);
+	MQTTAsync_reconnect(client_handler);
+	printf("Subscribing to topic %s\nfor client %s using QoS%d\n\n", "LED_Control/#", CLIENTID, QOS);
+	resp_opts.onSuccess = onSubscribe;
+	resp_opts.onFailure = onSubscribeFailure;
+	resp_opts.context = client_handler;
+	if ((rc = MQTTAsync_subscribe(client_handler, "LED_Control/#", QOS, &resp_opts)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to start subscribe, return code %d\n", rc);
+	}
 }
 
 static void onConnectFailure(void* context, MQTTAsync_failureData* response)
@@ -100,14 +138,26 @@ static void onConnectFailure(void* context, MQTTAsync_failureData* response)
 	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 	int rc;
 
+	if ((rc = MQTTAsync_create(&client_handler, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to create client object, return code %d\n", rc);
+		Error_Handler("MQTTAsync_create");
+	}
+	
 	printf("Reconnecting\n");
 	conn_opts.keepAliveInterval = 60;
 	conn_opts.cleansession = 1;
+	conn_opts.onSuccess = onConnect;
+	conn_opts.onFailure = onConnectFailure;
+	MQTTAsync_SSLOptions ssl = MQTTAsync_SSLOptions_initializer;
+	ssl.trustStore = "/home/pi/Desktop/BKLight/ca.crt";
+	ssl.sslVersion = MQTT_SSL_VERSION_TLS_1_2;
+	conn_opts.ssl = &ssl;
 	MQTT_Connect_flag = 0;
-	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS)
+	reconnect_var = 1;
+	if ((rc = MQTTAsync_connect(client_handler, &conn_opts)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to start connect, return code %d\n", rc);
-		Error_Handler("MQTTAsync_connect");
 	}
 }
 
@@ -130,13 +180,10 @@ void MQTT_Init()
 		printf("Failed to create client object, return code %d\n", rc);
 		Error_Handler("MQTTAsync_create");
 	}
-
 	if ((rc = MQTTAsync_setCallbacks(client_handler, NULL, connlost, messageArrived, NULL)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to set callback, return code %d\n", rc);
-		Error_Handler("MQTTAsync_setCallbacks");
 	}
-
 	conn_opts.keepAliveInterval = 60;
 	conn_opts.cleansession = 1;
 	conn_opts.onSuccess = onConnect;
@@ -155,24 +202,6 @@ void MQTT_Init()
 		printf("Failed to start connect, return code %d\n", rc);
 		Error_Handler("MQTTAsync_connect");
 	}
-
-	/* Chươn trình sẽ bị treo cho đến khi kết nối thành công */
-	while(MQTT_Connect_flag != 1);
-	
-	MQTTAsync_responseOptions resp_opts = MQTTAsync_responseOptions_initializer;
-
-	MQTT_Transmit(TOPIC, PAYLOAD);
-
-	printf("Subscribing to topic %s\nfor client %s using QoS%d\n\n", "LED_Control/#", CLIENTID, QOS);
-	resp_opts.onSuccess = onSubscribe;
-	resp_opts.onFailure = onSubscribeFailure;
-	resp_opts.context = client_handler;
-	if ((rc = MQTTAsync_subscribe(client_handler, "LED_Control/#", QOS, &resp_opts)) != MQTTASYNC_SUCCESS)
-	{
-		printf("Failed to start subscribe, return code %d\n", rc);
-		Error_Handler("MQTTAsync_subscribe");
-	}
-
 }
 
 
@@ -224,6 +253,29 @@ static void MQTT_Split_String(char *in_str, int out_array_value[], int *out_len)
 		token = strtok(NULL, " ");
 	}
 }
+
+/**
+  * Đây là hàm truyền tín hiệu alive của riêng Gateway(GW) lên Sever
+  * 
+  */
+void MQTT_Send_GW_Alive(void)
+{
+	uint8_t temp[100];
+	sprintf((char *)temp, "%d 1", time(NULL));
+	MQTT_Transmit(MQTT_TOPIC_GATEWAY_ALIVE, temp);
+}
+
+/**
+  * Đây là hàm truyền tín hiệu not alive của các node lên Sever
+  * 
+  */
+void MQTT_Send_Node_Not_Alive(uint16_t node_addr)
+{
+	uint8_t temp[100];
+	sprintf((char *)temp, "%d %d 1", time(NULL), node_addr);
+	MQTT_Transmit(MQTT_TOPIC_NODE_NOT_ALIVE, temp);
+}
+
 
 void MQTT_Task_Receive(void)
 {

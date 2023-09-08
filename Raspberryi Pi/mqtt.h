@@ -28,6 +28,10 @@ fflush(stdout);
 #define MQTT_TOPIC_CONTROL_DIMMING	"LED_Control/Dimming"
 #define MQTT_TOPIC_CONTROL_TIMER	"LED_Control/Set_Time"
 
+#define MQTT_TOPIC_GATEWAY_ALIVE	"Gateway_Alive"
+#define MQTT_TOPIC_NODE_NOT_ALIVE	"Node_Dead"
+
+
 typedef struct 
 {
 	char topic[100];
@@ -69,5 +73,7 @@ void MQTT_Transmit(uint8_t *topic, uint8_t *payload);
 void MQTT_LED_Data_Transmit(MQTT_LED_Data_t LED_Data);
 void MQTT_Task_Receive(void);
 void Error_Handler(char *name_fail);
+void MQTT_Send_GW_Alive(void);
+void MQTT_Send_Node_Not_Alive(uint16_t node_addr);
 
 #endif /* MQTT_H_ */

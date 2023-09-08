@@ -108,10 +108,10 @@ static void LORA_Send_Synctime(void)
 	synctime_send[7] = KEY_SYNCTIME;
 	synctime_send[8] = LENGTH_SYNCTIME;
 
-	memcpy(&synctime_send[8], &time_now, LENGTH_SYNCTIME);
-	synctime_send[8+LENGTH_SYNCTIME] = CalCRC(&synctime_send[8], LENGTH_SYNCTIME);
+	memcpy(&synctime_send[9], &time_now, LENGTH_SYNCTIME);
+	synctime_send[9+LENGTH_SYNCTIME] = CalCRC(&synctime_send[9], LENGTH_SYNCTIME);
 
-	UART_Add_To_TxQueue(synctime_send, 9+LENGTH_SYNCTIME);
+	UART_Add_To_TxQueue(synctime_send, 10+LENGTH_SYNCTIME);
 }
 
 void LORA_Send_Control_OnOff(MQTT_LED_Control_OnOff_t on_off_struct)
@@ -127,10 +127,10 @@ void LORA_Send_Control_OnOff(MQTT_LED_Control_OnOff_t on_off_struct)
 	on_off_send[7] = KEY_CONTROL_ONOFF ;
 	on_off_send[8] = LENGTH_CONTROL_ONOFF;
 
-	memcpy(&on_off_send[8], &on_off_struct.on_off, LENGTH_CONTROL_ONOFF);
-	on_off_send[8+LENGTH_CONTROL_ONOFF] = CalCRC(&on_off_send[8], LENGTH_CONTROL_ONOFF);
+	memcpy(&on_off_send[9], &on_off_struct.on_off, LENGTH_CONTROL_ONOFF);
+	on_off_send[9+LENGTH_CONTROL_ONOFF] = CalCRC(&on_off_send[9], LENGTH_CONTROL_ONOFF);
 
-	UART_Add_To_TxQueue(on_off_send, 9+LENGTH_CONTROL_ONOFF);
+	UART_Add_To_TxQueue(on_off_send, 10+LENGTH_CONTROL_ONOFF);
 }
 
 void LORA_Send_Control_Dimming(MQTT_LED_Control_Dimming_t dimming_struct)
@@ -146,10 +146,10 @@ void LORA_Send_Control_Dimming(MQTT_LED_Control_Dimming_t dimming_struct)
 	dimming_send[7] = KEY_CONTROL_DIMMING ;
 	dimming_send[8] = LENGTH_CONTROL_DIMMING;
 
-	memcpy(&dimming_send[8], &dimming_struct.dimming, LENGTH_CONTROL_DIMMING);
-	dimming_send[8+LENGTH_CONTROL_DIMMING] = CalCRC(&dimming_send[8], LENGTH_CONTROL_DIMMING);
+	memcpy(&dimming_send[9], &dimming_struct.dimming, LENGTH_CONTROL_DIMMING);
+	dimming_send[9+LENGTH_CONTROL_DIMMING] = CalCRC(&dimming_send[9], LENGTH_CONTROL_DIMMING);
 
-	UART_Add_To_TxQueue(dimming_send, 9+LENGTH_CONTROL_DIMMING);
+	UART_Add_To_TxQueue(dimming_send, 10+LENGTH_CONTROL_DIMMING);
 }
 
 void LORA_Send_Control_Set_Time(MQTT_LED_Control_SetTime_t settime_struct)
@@ -165,10 +165,10 @@ void LORA_Send_Control_Set_Time(MQTT_LED_Control_SetTime_t settime_struct)
 	settime_send[7] = KEY_CONTROL_SETTIME;
 	settime_send[8] = LENGTH_CONTROL_SETTIME;
 
-	memcpy(&settime_send[8], &settime_struct.time_hour, LENGTH_CONTROL_SETTIME);
-	settime_send[8+LENGTH_CONTROL_SETTIME] = CalCRC(&settime_send[8], LENGTH_CONTROL_SETTIME);
+	memcpy(&settime_send[9], &settime_struct.time_hour, LENGTH_CONTROL_SETTIME);
+	settime_send[9+LENGTH_CONTROL_SETTIME] = CalCRC(&settime_send[9], LENGTH_CONTROL_SETTIME);
 
-	UART_Add_To_TxQueue(settime_send, 9+LENGTH_CONTROL_SETTIME);
+	UART_Add_To_TxQueue(settime_send, 10+LENGTH_CONTROL_SETTIME);
 }
 
 void UART_Parse_Data(uint8_t rx_byte)
@@ -277,7 +277,6 @@ void UART_Parse_Data(uint8_t rx_byte)
 								lora_end_node[i].led_current = (value[7] << 8) | value[6];
 			printf("lora_end_node[i].led_current %d\n",lora_end_node[i].led_current );
 			fflush(stdout);
-								//UART_Add_To_TxQueue((uint8_t *)&lora_end_node[i], sizeof(lora_end_node[i]));
 								
 								//Send_MQTT
 								MQTT_LED_Data_t LED_Data;
@@ -332,6 +331,7 @@ void Task_UART_Rx(void)
 
 		for(int i=0; i < UART_RxCount; i++)
 		{
+			printf("%d",UART_Rx_buffer[i]);
 			UART_Parse_Data(UART_Rx_buffer[i]);
 		}
 

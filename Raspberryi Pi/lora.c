@@ -35,6 +35,7 @@ void LoRa_Init(void)
 	global_configuration.CHAN = LORA_CHANNEL;
 	global_configuration.SPED.airDataRate = AIR_DATA_RATE_101_192;
 	global_configuration.SPED.uartBaudRate = UART_BPS_115200;
+	global_configuration.OPTION.fixedTransmission = FT_FIXED_TRANSMISSION;
 
 	LoRa_setConfiguration(global_configuration, WRITE_CFG_PWR_DWN_SAVE);
 
