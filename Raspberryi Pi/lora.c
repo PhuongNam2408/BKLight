@@ -42,6 +42,7 @@ void LoRa_Init(void)
 	for(int i = 0; i < NUM_END_NODE; i++)
 	{
 		lora_end_node[i].node_address = i+1;
+		lora_end_node[i].fault = NODE_FAULT_NONE;
 	}
 
 	UART_Init();

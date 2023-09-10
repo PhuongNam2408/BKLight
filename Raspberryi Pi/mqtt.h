@@ -31,7 +31,13 @@ fflush(stdout);
 #define MQTT_TOPIC_GATEWAY_ALIVE	"Gateway_Alive"
 #define MQTT_TOPIC_NODE_NOT_ALIVE	"Node_Dead"
 
+//20 phut
+#define NODE_TIME_OUT	(20*60)
 
+#define NODE_FAULT_LOST_CONNECTION	0
+#define NODE_FAULT_MIN_CURRENT	1
+#define NODE_FAULT_MAX_CURRENT	2
+#define NODE_FAULT_NONE	0xFF
 typedef struct 
 {
 	char topic[100];
@@ -62,10 +68,14 @@ typedef struct
 typedef struct
 {
 	uint16_t node_addr;
-	uint8_t time_hour;
-	uint8_t time_minute;
-	uint8_t on_off;
-	uint8_t dimming; 
+	uint8_t time1_hour;
+	uint8_t time1_minute;
+	uint8_t time2_hour;
+	uint8_t time2_minute;
+	uint8_t time3_hour;
+	uint8_t time3_minute;
+	uint8_t time4_hour;
+	uint8_t time4_minute;
 }MQTT_LED_Control_SetTime_t;
 
 void MQTT_Init();
@@ -74,6 +84,8 @@ void MQTT_LED_Data_Transmit(MQTT_LED_Data_t LED_Data);
 void MQTT_Task_Receive(void);
 void Error_Handler(char *name_fail);
 void MQTT_Send_GW_Alive(void);
-void MQTT_Send_Node_Not_Alive(uint16_t node_addr);
+void MQTT_Send_Node_Not_Alive(uint16_t node_addr, uint8_t fault);
+
+
 
 #endif /* MQTT_H_ */

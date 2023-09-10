@@ -269,10 +269,10 @@ void MQTT_Send_GW_Alive(void)
   * Đây là hàm truyền tín hiệu not alive của các node lên Sever
   * 
   */
-void MQTT_Send_Node_Not_Alive(uint16_t node_addr)
+void MQTT_Send_Node_Not_Alive(uint16_t node_addr, uint8_t fault)
 {
 	uint8_t temp[100];
-	sprintf((char *)temp, "%d %d 1", time(NULL), node_addr);
+	sprintf((char *)temp, "%d %d %d", time(NULL), node_addr, fault);
 	MQTT_Transmit(MQTT_TOPIC_NODE_NOT_ALIVE, temp);
 }
 
@@ -322,15 +322,20 @@ void MQTT_Task_Receive(void)
 
 			MQTT_LED_Control_SetTime_t settime_send;
 			settime_send.node_addr = arr_temp[0];
-			settime_send.time_hour = arr_temp[1];
-			settime_send.time_minute = arr_temp[2];
-			settime_send.on_off = arr_temp[3];
-			settime_send.dimming = arr_temp[4];
+			settime_send.time1_hour = arr_temp[1];
+			settime_send.time1_minute = arr_temp[2];
+			settime_send.time2_hour = arr_temp[3];
+			settime_send.time2_minute = arr_temp[4];
+			settime_send.time3_hour = arr_temp[5];
+			settime_send.time3_minute = arr_temp[6];
+			settime_send.time4_hour = arr_temp[7];
+			settime_send.time4_minute = arr_temp[8];
 			LORA_Send_Control_Set_Time(settime_send);
 
 			char temp[100]="";
-			sprintf(temp, "Set_Time success. Dia chi: %d. Thoi gian: %d:%d. OnOff: %d. Dimming: %d%%",\
-			 settime_send.node_addr,settime_send.time_hour,settime_send.time_minute,settime_send.on_off,settime_send.dimming);
+			sprintf(temp, "Set_Time success. Dia chi: %d. Thoi gian 1: %d:%d. Thoi gian 2: %d:%d. Thoi gian 3: %d:%d. Thoi gian 4: %d:%d\n",\
+			 settime_send.node_addr,settime_send.time1_hour,settime_send.time1_minute,settime_send.time2_hour,settime_send.time2_minute,\
+			 settime_send.time3_hour,settime_send.time3_minute,settime_send.time4_hour,settime_send.time4_minute);
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\nsettime\n");

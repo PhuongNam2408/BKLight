@@ -165,7 +165,7 @@ void LORA_Send_Control_Set_Time(MQTT_LED_Control_SetTime_t settime_struct)
 	settime_send[7] = KEY_CONTROL_SETTIME;
 	settime_send[8] = LENGTH_CONTROL_SETTIME;
 
-	memcpy(&settime_send[9], &settime_struct.time_hour, LENGTH_CONTROL_SETTIME);
+	memcpy(&settime_send[9], &settime_struct.time1_hour, LENGTH_CONTROL_SETTIME);
 	settime_send[9+LENGTH_CONTROL_SETTIME] = CalCRC(&settime_send[9], LENGTH_CONTROL_SETTIME);
 
 	UART_Add_To_TxQueue(settime_send, 10+LENGTH_CONTROL_SETTIME);
@@ -265,9 +265,13 @@ void UART_Parse_Data(uint8_t rx_byte)
 						{
 							if(lora_end_node[i].node_address == source_address)
 							{
+								/* Cho node sống lại */
+								if(lora_end_node[i].fault == NODE_FAULT_LOST_CONNECTION)
+								{
+									lora_end_node[i].fault = NODE_FAULT_NONE;
+								}
 			printf("node %d\n", source_address);
 			fflush(stdout);
-
 								lora_end_node[i].timestamp = (value[3] << 24) | (value[2] << 16) | (value[1] << 8) | (value[0]);
 			printf("lora_end_node[i].timestamp %d\n",lora_end_node[i].timestamp );
 								lora_end_node[i].led_on_off = value[4];
@@ -292,7 +296,28 @@ void UART_Parse_Data(uint8_t rx_byte)
 					}
 					break;
 				case KEY_CURRENT_WARNING:
-
+					if(length == LENGTH_CURRENT_WARNING)
+					{
+						for(int i = 0; i < NUM_END_NODE; i++)
+						{
+							if(lora_end_node[i].node_address == source_address)
+							{
+								lora_end_node[i].timestamp = (value[3] << 24) | (value[2] << 16) | (value[1] << 8) | (value[0]);
+								lora_end_node[i].fault = value[4];
+								if(lora_end_node[i].fault == NODE_FAULT_MIN_CURRENT)
+								{
+									MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address, NODE_FAULT_MIN_CURRENT);
+								}
+								else if(lora_end_node[i].fault == NODE_FAULT_MAX_CURRENT)
+								{
+									MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address, NODE_FAULT_MAX_CURRENT);
+								}
+								printf("node %d\n", source_address);
+								printf("lora_end_node[i].timestamp %d\n",lora_end_node[i].timestamp);
+								printf("lora_end_node[i].fault %d\n",lora_end_node[i].fault);
+							}
+						}
+					}
 					break;
 				case KEY_SYNCTIME:
 					LORA_Send_Synctime();

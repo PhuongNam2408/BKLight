@@ -45,9 +45,10 @@ void Check_Node_Alive(void)
 	uint32_t now = time(NULL);
 	for(int i = 0; i < 5; i++)
 	{
-		if(now - lora_end_node[i].timestamp > 20*60)
+		if(now - lora_end_node[i].timestamp > NODE_TIME_OUT)
 		{
-			MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address);
+			lora_end_node[i].fault == NODE_FAULT_LOST_CONNECTION;
+			MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address, NODE_FAULT_LOST_CONNECTION);
 		}
 	}
 }
@@ -80,7 +81,7 @@ int main()
 			Task_UART_Rx();
 			Task_UART_Tx();
 			MQTT_Task_Receive();
-			if(count > 100)
+			if(count > 200)
 			{
 				printf("transmit");
 				Check_Node_Alive();

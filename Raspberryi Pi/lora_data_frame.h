@@ -21,9 +21,10 @@ typedef struct
 	uint8_t led_on_off;
 	uint8_t led_dimming;
 	uint16_t led_current;
+	uint8_t fault;
 }lora_end_node_t;
 
-#define NUM_END_NODE	10
+#define NUM_END_NODE	5
 
 #define LORA_CHANNEL	15
 
@@ -52,10 +53,11 @@ typedef struct
 
 
 #define	LENGTH_END_NODE_DATA	8
+#define	LENGTH_CURRENT_WARNING	5
 #define	LENGTH_SYNCTIME	4
 #define	LENGTH_CONTROL_ONOFF	1
 #define	LENGTH_CONTROL_DIMMING	1
-#define	LENGTH_CONTROL_SETTIME	4
+#define	LENGTH_CONTROL_SETTIME	8
 
 #define LORA_LENGTH_VALID(length) (	\
 	(length) == LENGTH_END_NODE_DATA	\
