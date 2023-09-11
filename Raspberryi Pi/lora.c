@@ -32,10 +32,18 @@ void LoRa_Init(void)
 
 	global_configuration.ADDH = (uint8_t) (GATE_WAY_ADDR >> 8);
 	global_configuration.ADDL = (uint8_t) (GATE_WAY_ADDR | 0xFF);
-	global_configuration.CHAN = LORA_CHANNEL;
+
 	global_configuration.SPED.airDataRate = AIR_DATA_RATE_101_192;
+	global_configuration.SPED.uartParity = MODE_00_8N1;
 	global_configuration.SPED.uartBaudRate = UART_BPS_115200;
+
+	global_configuration.CHAN = LORA_CHANNEL;
+
 	global_configuration.OPTION.fixedTransmission = FT_FIXED_TRANSMISSION;
+	global_configuration.OPTION.ioDriveMode = IO_D_MODE_PUSH_PULLS_PULL_UPS;
+	global_configuration.OPTION.wirelessWakeupTime = WAKE_UP_250;
+	global_configuration.OPTION.fec = FEC_1_ON;
+	global_configuration.OPTION.transmissionPower = POWER_20;
 
 	LoRa_setConfiguration(global_configuration, WRITE_CFG_PWR_DWN_SAVE);
 

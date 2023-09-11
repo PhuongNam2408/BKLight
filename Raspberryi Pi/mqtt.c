@@ -17,7 +17,7 @@ volatile int MQTT_Connect_flag = 0;
 volatile int reconnect_var = 0;
 
 volatile uint16_t MQTT_Rx_Count = 0;
-MQTT_Message MQTT_Rx_Buffer[20];
+MQTT_Message MQTT_Rx_Buffer[200];
 
 
 /* STATIC FUNCTION */

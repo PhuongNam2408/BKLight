@@ -270,6 +270,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 								{
 									lora_end_node[i].fault = NODE_FAULT_NONE;
 								}
+			
 			printf("node %d\n", source_address);
 			fflush(stdout);
 								lora_end_node[i].timestamp = (value[3] << 24) | (value[2] << 16) | (value[1] << 8) | (value[0]);
@@ -356,7 +357,6 @@ void Task_UART_Rx(void)
 
 		for(int i=0; i < UART_RxCount; i++)
 		{
-			printf("%d",UART_Rx_buffer[i]);
 			UART_Parse_Data(UART_Rx_buffer[i]);
 		}
 

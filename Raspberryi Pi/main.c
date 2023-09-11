@@ -45,10 +45,15 @@ void Check_Node_Alive(void)
 	uint32_t now = time(NULL);
 	for(int i = 0; i < 5; i++)
 	{
-		if(now - lora_end_node[i].timestamp > NODE_TIME_OUT)
+		uint32_t delta_time = (now > lora_end_node[i].timestamp) ? \
+		(now - lora_end_node[i].timestamp) : (lora_end_node[i].timestamp - now);
+		if(delta_time > NODE_TIME_OUT)
 		{
 			lora_end_node[i].fault == NODE_FAULT_LOST_CONNECTION;
 			MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address, NODE_FAULT_LOST_CONNECTION);
+		}
+		else{
+			printf("delta time: %d\n", delta_time);
 		}
 	}
 }
