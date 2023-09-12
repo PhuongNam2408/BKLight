@@ -25,8 +25,14 @@ static read_state_t read_state;
 static uint8_t key, length, crc, data_count;
 static uint8_t value[LORA_MAX_SIZE_PACKET];
 
-
 extern Time_Mark_t node_time_mark;
+
+extern End_Node_Data_t node_data;
+
+extern uint8_t Sever_Control;
+extern uint32_t sever_control_tick;
+extern uint8_t led_state_Sever;
+extern uint8_t led_dimming_Sever;
 
 /**************************************************************************//**
  * @brief
@@ -223,6 +229,24 @@ void UART_Parse_Data(uint8_t rx_byte)
           node_time_mark.Time_Mark_4_minute = value[7];
           break;
 
+        case KEY_CONTROL_ONOFF:
+          //Cập nhật trạng thái bị Sever điều khiển
+          Sever_Control = 1;
+          sever_control_tick = node_data.timestamp;
+
+          led_state_Sever = value[0];
+          led_dimming_Sever = node_data.led_dimming;
+          break;
+
+        case KEY_CONTROL_DIMMING:
+          //Cập nhật trạng thái bị Sever điều khiển
+          Sever_Control = 1;
+          sever_control_tick = node_data.timestamp;
+
+          led_state_Sever = node_data.led_state;
+          led_dimming_Sever = value[0];
+          break;
+
         default:
           break;
         }
@@ -256,10 +280,51 @@ void Task_UART_Rx(void)
   }
 }
 
-void Task_UART_Tx(void)
+void UART_Transmit_Buffer(void)
 {
   if(UART_tx_index > 0){
       UART_Transmit(UART_TxQueue, UART_tx_index);
       UART_tx_index = 0;
   }
 }
+void Task_UART_Tx(void)
+{
+  /**************************************************************************/
+  /**** Update node_data lên gateway. Theo chu kỳ hoặc theo sự thay đổi *****/
+  /**************************************************************************/
+  //Chu kỳ
+  static uint32_t uart_tx_time = 0;
+  if(uart_tx_time == 0){
+      uart_tx_time = node_data.timestamp;
+  }
+  /* Sau Cycle time, data sẽ được đẩy lên gateway */
+  if(node_data.timestamp - uart_tx_time > TRANSMIT_NODE_DATA_CYCLE_TIME){
+      LORA_Send_End_Node_Data(node_data);
+      uart_tx_time = node_data.timestamp;
+  }
+  //Sự thay dổi giá trị
+  static End_Node_Data_t node_data_before = {.timestamp = 0};
+  if(node_data_before.timestamp == 0){
+      node_data_before = node_data;
+  }
+  if(node_data_before.led_dimming != node_data.led_dimming ||
+      node_data_before.led_state != node_data.led_state)
+  {
+      LORA_Send_End_Node_Data(node_data);
+      node_data_before = node_data;
+  }
+  UART_Transmit_Buffer();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -19,6 +19,53 @@ extern volatile int MQTT_Connect_flag;
 Lora_Configuration_t global_configuration;
 int deviceHandle;
 
+void Watchdog_Init(void);
+void Watchdog_Feed(void);
+void Check_Node_Alive(void);
+void Test_Push_Node_With_HieuVM(void);
+
+int main()
+{
+	//Watchdog_Init();
+	LoRa_Init();
+
+	printf("----------------------------------------\n");
+
+	printf(("HEAD BIN: 0x%x\n"), global_configuration.HEAD); 
+	printf("\n");
+	printf("AddH HEX: 0x%x\n", global_configuration.ADDH);  
+	printf("AddL HEX: 0x%x\n", global_configuration.ADDL); 
+	printf("Chan DEC: %d\n", global_configuration.CHAN);  
+	printf("\n");
+	printf("Speed HEX: 0x%x\n", global_configuration.SPED);
+	printf("Option HEX 0x%x\n", global_configuration.OPTION);
+	printf("----------------------------------------\n");
+	fflush(stdout);
+
+	MQTT_Init();
+	int count = 0;
+	while(1)
+	{
+		if(MQTT_Connect_flag == 1)
+		{
+			//Watchdog_Feed();
+			Task_UART_Rx();
+			Task_UART_Tx();
+			MQTT_Task_Receive();
+			if(count > 200)
+			{
+				printf("transmit");
+				Check_Node_Alive();
+				MQTT_Send_GW_Alive();
+				Test_Push_Node_With_HieuVM();
+				count=0;
+			}
+		}
+		count++;
+		delay(10);
+	}
+	return 0;
+}
 
 
 void Watchdog_Init(void)
@@ -58,44 +105,22 @@ void Check_Node_Alive(void)
 	}
 }
 
-int main()
+void Test_Push_Node_With_HieuVM(void)
 {
-	//Watchdog_Init();
-	LoRa_Init();
-
-	printf("----------------------------------------\n");
-
-	printf(("HEAD BIN: 0x%x\n"), global_configuration.HEAD); 
-	printf("\n");
-	printf("AddH HEX: 0x%x\n", global_configuration.ADDH);  
-	printf("AddL HEX: 0x%x\n", global_configuration.ADDL); 
-	printf("Chan DEC: %d\n", global_configuration.CHAN);  
-	printf("\n");
-	printf("Speed HEX: 0x%x\n", global_configuration.SPED);
-	printf("Option HEX 0x%x\n", global_configuration.OPTION);
-	printf("----------------------------------------\n");
-	fflush(stdout);
-
-	MQTT_Init();
-	int count = 0;
-	while(1)
+	for(int i=0; i<5; i++)
 	{
-		if(MQTT_Connect_flag == 1)
-		{
-			//Watchdog_Feed();
-			Task_UART_Rx();
-			Task_UART_Tx();
-			MQTT_Task_Receive();
-			if(count > 200)
-			{
-				printf("transmit");
-				Check_Node_Alive();
-				MQTT_Send_GW_Alive();
-				count=0;
-			}
-		}
-		count++;
-		delay(10);
+		lora_end_node[i].timestamp = time(NULL);
+		lora_end_node[i].led_on_off = 0;
+		lora_end_node[i].led_dimming = 45;
+		lora_end_node[i].fault = NODE_FAULT_NONE;
+		//Send_MQTT
+		MQTT_LED_Data_t LED_Data;
+		LED_Data.node_addr = lora_end_node[i].node_address;
+		LED_Data.timestamp = lora_end_node[i].timestamp;
+		LED_Data.on_off = lora_end_node[i].led_on_off;
+		LED_Data.dimming = lora_end_node[i].led_dimming;
+		LED_Data.current_sensor = lora_end_node[i].led_current;
+
+		MQTT_LED_Data_Transmit(LED_Data);
 	}
-	return 0;
 }

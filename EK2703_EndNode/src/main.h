@@ -57,6 +57,12 @@
 #define LED_STATE_DEFAULT_4     0
 #define LED_DIMMING_DEFAULT_4   0
 
+/* Chu kỳ cập nhật dữ liệu Node, đơn vị: giây */
+#define TRANSMIT_NODE_DATA_CYCLE_TIME 5
+
+/* Thời gian tối đa 1 lệnh ở trên Sever chiếm quyền điều khiển LED, đơn vị: giây */
+#define SEVER_CONTROL_TIME  10
+
 /* Trạng thái thời gian tại các khoảng dựa vào timmark*/
 typedef enum
 {

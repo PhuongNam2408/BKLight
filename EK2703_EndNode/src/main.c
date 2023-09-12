@@ -160,6 +160,11 @@ time_state_t node_time_state;
 uint8_t led_state_default;
 uint8_t led_dimming_default;
 
+uint8_t Sever_Control = 0;
+uint32_t sever_control_tick = 0;
+uint8_t led_state_Sever;
+uint8_t led_dimming_Sever;
+
 int main(void)
 {
   SYSCLK_Init();
@@ -176,7 +181,11 @@ int main(void)
   PIR_Init();
   RTC_Init();
 
+\
+
   Nam_Init();
+
+
 
   while(1)
   {
@@ -187,10 +196,10 @@ int main(void)
 
      Task_Control_Led();
 
-     LORA_Send_End_Node_Data(node_data);
-     //Task_UART_Rx();
      Task_UART_Tx();
-     Delay_ms(2000);
+
+     Task_UART_Rx();
+     Delay_ms(10);
    }
 }
 
@@ -271,25 +280,6 @@ static void PWM_Init(void)
 }
 
 
-void check_PIR()
-{
-  // Đọc trạng thái của cảm biến PIR
-  if (GPIO_PinInGet(PIR_OUT_PORT, PIR_OUT_PIN)){
-    // Bật đèn LED 100%
-    sl_pwm_set_duty_cycle(&sl_pwm_led0, LED_DIMMING_PIR_ON);
-    dimming = LED_DIMMING_PIR_ON;
-  }
-  else
-  {
-    sl_pwm_set_duty_cycle(&sl_pwm_led0, LED_DIMMING_PIR_OFF);
-    dimming = LED_DIMMING_PIR_OFF;
-//    if (key == 0x04)
-//
-//    if (key == 0x05)
-
-  }
-}
-
 static void PIR_Init(void)
 {
   CMU_ClockEnable(cmuClock_GPIO, true);
@@ -325,7 +315,7 @@ static void Nam_Init(void)
   LoRa_getConfiguration(&Lora_Config);
 
    synctime: LORA_Send_Synctime();
-  Task_UART_Tx();
+  UART_Transmit_Buffer();
   uint32_t prev_time = tick_count;
   while(synctime_flag == 0){
       Delay_ms(10);
@@ -390,13 +380,24 @@ static void Task_Read_Sensor(void)
 
   /* Đọc cảm biến chuyển động */
   Sensor_value.PIR = GPIO_PinInGet(PIR_OUT_PORT, PIR_OUT_PIN);
-
+  if(Sensor_value.PIR == 1){
+            int countasas=0;
+        }
   /* Đọc cảm biến dòng điện */
   Sensor_value.ACS712 = (uint16_t) ((ACS712_Buffer[0]*3.3/4095) - 2.5)*1000;
 }
 
 static void Task_Control_Led(void)
 {
+  /**************************************************************************/
+  /************* Kiểm tra Sever có đang control đèn hay không ***************/
+  /**************************************************************************/
+  if(Sever_Control == 1){
+      if(node_data.timestamp - sever_control_tick > SEVER_CONTROL_TIME){
+          Sever_Control = 0;
+      }
+  }
+
   /**************************************************************************/
   /************* Update giá trị default của LED theo Time mark **************/
   /**************************************************************************/
@@ -454,30 +455,49 @@ static void Task_Control_Led(void)
   node_data.led_dimming = led_dimming_default;
   /* Trời trong khoảng thời gian ban ngày */
   if(node_time_state == TIME_STATE_4){
-      static uint32_t temp_bh1750_time = 0;
+      if(Sever_Control == 1){
+          //Node bị sever điều khiển trong SEVER_CONTROL_TIME
+          node_data.led_state = led_state_Sever;
+          node_data.led_dimming = led_dimming_Sever;
+      }
+      else {
+          static uint32_t temp_bh1750_time = 0;
 
-      //Trời đột ngột tối, để kích hoạt cần đột ngột tối trong khoảng thời gian tương đối
-      if(Sensor_value.BH1750 <= BH1750_LIGHT_THRESHOLD){
-          if(temp_bh1750_time == 0){
-              temp_bh1750_time = node_data.timestamp;
+          //Trời đột ngột tối, để kích hoạt cần đột ngột tối trong khoảng thời gian tương đối
+          if(Sensor_value.BH1750 <= BH1750_LIGHT_THRESHOLD){
+              if(temp_bh1750_time == 0){
+                  temp_bh1750_time = node_data.timestamp;
+              }
+              if(node_data.timestamp - temp_bh1750_time > BH1750_TIME_ON_THRESHOLD){
+                  //Đã đạt đủ thời gian => Bật đèn maximum
+                  node_data.led_state = 1;
+                  node_data.led_dimming = 100;
+              }
           }
-          if(node_data.timestamp - temp_bh1750_time > BH1750_TIME_ON_THRESHOLD){
-              //Đã đạt đủ thời gian => Bật đèn maximum
-              node_data.led_state = 1;
-              node_data.led_dimming = 100;
+          else{
+              temp_bh1750_time = 0;
+              node_data.led_state = led_state_default;
+              node_data.led_dimming = led_dimming_default;
           }
       }
-      else{
-          temp_bh1750_time = 0;
-      }
+
   }
+  //Khoảng thời gian buổi tối => Ưu tiên cảm biến chuyển động
   else{
       /* Có chuyển động */
       if(Sensor_value.PIR == 1){
           node_data.led_state = 1;
           node_data.led_dimming = 100;
       }
+
+      else if(Sever_Control == 1){
+          //Node bị sever điều khiển trong SEVER_CONTROL_TIME
+          node_data.led_state = led_state_Sever;
+          node_data.led_dimming = led_dimming_Sever;
+      }
+
       else{
+          //Default state
           node_data.led_state = led_state_default;
           node_data.led_dimming = led_dimming_default;
       }
@@ -487,7 +507,7 @@ static void Task_Control_Led(void)
   /*************   Đưa ra ngoài chân: trạng thái và dimming    **************/
   /**************************************************************************/
   if(node_data.led_state == 0){
-      GPIO_PinOutClear(PWM_LED_PORT, PWM_LED_PIN);
+      sl_pwm_set_duty_cycle(&sl_pwm_led0, pwm_lut[0]);
   }
   else if (node_data.led_state == 1){
       sl_pwm_set_duty_cycle(&sl_pwm_led0, pwm_lut[node_data.led_dimming]);

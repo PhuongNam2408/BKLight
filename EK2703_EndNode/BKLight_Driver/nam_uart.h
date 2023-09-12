@@ -25,5 +25,6 @@ void UART_Add_To_TxQueue(uint8_t* data, uint16_t length);
 uint8_t CalCRC(uint8_t *data, int length);
 void LORA_Send_End_Node_Data(End_Node_Data_t node_data_t);
 void LORA_Send_Synctime(void);
+void UART_Transmit_Buffer(void);
 
 #endif /* NAM_DRIVER_NAM_UART_H_ */
