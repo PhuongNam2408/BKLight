@@ -12,9 +12,6 @@ int global_fd_flag = 0;
 /* Biến quan trọng nhất, quản lý trạng thái của tất cả các đèn */
 lora_end_node_t lora_end_node[NUM_END_NODE];
 
-extern volatile uint32_t UART_RxCount;
-extern uint8_t UART_Rx_buffer[UART_MAX_NUM_BYTE];
-
 extern volatile int MQTT_Connect_flag;
 Lora_Configuration_t global_configuration;
 int deviceHandle;
@@ -43,26 +40,40 @@ int main()
 	fflush(stdout);
 
 	MQTT_Init();
-	int count = 0;
+	int alive_count = 0;
+	int uart_rx_count = 0;
+	int uart_tx_count = 0;
 	while(1)
 	{
 		if(MQTT_Connect_flag == 1)
 		{
 			//Watchdog_Feed();
-			Task_UART_Rx();
-			Task_UART_Tx();
+			if(uart_rx_count >= 10)
+			{//10ms
+				Task_UART_Rx();
+				uart_rx_count = 0;
+			}
+			if(uart_tx_count >= 50)
+			{//50ms
+				Task_UART_Tx();
+				uart_tx_count = 0;
+			}
+			
 			MQTT_Task_Receive();
-			if(count > 200)
-			{
+
+			if(alive_count >= 1000)
+			{//1000ms
 				printf("transmit");
 				Check_Node_Alive();
 				MQTT_Send_GW_Alive();
-				Test_Push_Node_With_HieuVM();
-				count=0;
+				//Test_Push_Node_With_HieuVM();
+				alive_count=0;
 			}
 		}
-		count++;
-		delay(10);
+		alive_count++;
+		uart_rx_count++;
+		uart_tx_count++;
+		delay(1);
 	}
 	return 0;
 }

@@ -181,8 +181,6 @@ int main(void)
   PIR_Init();
   RTC_Init();
 
-\
-
   Nam_Init();
 
 
@@ -512,7 +510,6 @@ static void Task_Control_Led(void)
   else if (node_data.led_state == 1){
       sl_pwm_set_duty_cycle(&sl_pwm_led0, pwm_lut[node_data.led_dimming]);
   }
-
 }
 
 void SysTick_Handler(void)

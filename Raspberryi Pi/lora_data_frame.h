@@ -30,6 +30,10 @@ typedef struct
 
 #define	GATE_WAY_ADDR	0xFFFF
 
+#define LORA_ADDRESS_VALID(address) (	\
+	(address) != 0 \
+	&& (address) <= NUM_END_NODE )
+
 #define GATE_WAY_SYNC1	0x47
 #define GATE_WAY_SYNC2	0x57
 

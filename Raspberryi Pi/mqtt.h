@@ -31,6 +31,8 @@ fflush(stdout);
 #define MQTT_TOPIC_GATEWAY_ALIVE	"Gateway_Alive"
 #define MQTT_TOPIC_NODE_NOT_ALIVE	"Node_Dead"
 
+#define MQTT_TOPIC_FAKE_SYNCTIME	"NODE_Fake_time"
+
 //20 phut
 #define NODE_TIME_OUT	(20*60)
 

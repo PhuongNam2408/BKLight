@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES(
     )
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
-add_executable(BKLight main.c mqtt.c lora.c uart.c)
+add_executable(BKLight main.c mqtt.c lora.c uart.c aes.c)
 target_link_libraries(BKLight paho-mqtt3as)
 
 # Locate libraries and headers

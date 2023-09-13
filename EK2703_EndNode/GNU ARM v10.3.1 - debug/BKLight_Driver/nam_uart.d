@@ -72,7 +72,8 @@ BKLight_Driver/nam_uart.o: ../BKLight_Driver/nam_uart.c \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_chip.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h \
- D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h \
+ ../BKLight_Driver/aes.h
 ../BKLight_Driver/nam_uart.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
@@ -149,3 +150,4 @@ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_chip.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h:
+../BKLight_Driver/aes.h:

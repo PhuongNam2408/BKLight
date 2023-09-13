@@ -9,6 +9,7 @@
 #include "LoRa_E32.h"
 #include "nam_rtc.h"
 #include "main.h"
+#include "aes.h"
 
 // Receive data buffer
 uint8_t UART_Rx_buffer[UART_MAX_NUM_BYTE];
@@ -33,6 +34,7 @@ extern uint8_t Sever_Control;
 extern uint32_t sever_control_tick;
 extern uint8_t led_state_Sever;
 extern uint8_t led_dimming_Sever;
+
 
 /**************************************************************************//**
  * @brief
@@ -97,40 +99,50 @@ void UART_Add_To_TxQueue(uint8_t* data, uint16_t length)
 
 void LORA_Send_End_Node_Data(End_Node_Data_t node_data_t)
 {
+  /* Phần data không encrypt */
   uint8_t node_data_send[100];
   node_data_send[0] = (uint8_t) (GATE_WAY_ADDR >> 8);
   node_data_send[1] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
   node_data_send[2] = (uint8_t) LORA_CHANNEL;
-  node_data_send[3] = END_NODE_SYNC1;
-  node_data_send[4] = END_NODE_SYNC2;
-  node_data_send[5] = (uint8_t) (END_NODE_ADDR >> 8);
-  node_data_send[6] = (uint8_t) (END_NODE_ADDR & 0xFF);
-  node_data_send[7] = KEY_END_NODE_DATA;
-  node_data_send[8] = LENGTH_END_NODE_DATA;
 
-  memcpy(&node_data_send[9], &node_data_t, LENGTH_END_NODE_DATA);
-  node_data_send[9+LENGTH_END_NODE_DATA] = CalCRC(&node_data_send[9], LENGTH_END_NODE_DATA);
+  /* Phần data có encrypt */
+  uint8_t data_aes[100];
+  data_aes[0] = END_NODE_SYNC1;
+  data_aes[1] = END_NODE_SYNC2;
+  data_aes[2] = (uint8_t) (END_NODE_ADDR >> 8);
+  data_aes[3] = (uint8_t) (END_NODE_ADDR & 0xFF);
+  data_aes[4] = KEY_END_NODE_DATA;
+  data_aes[5] = LENGTH_END_NODE_DATA;
+  memcpy(&data_aes[6], &node_data_t, LENGTH_END_NODE_DATA);
+  data_aes[6+LENGTH_END_NODE_DATA] = CalCRC(&data_aes[6], LENGTH_END_NODE_DATA);
 
-  UART_Add_To_TxQueue(node_data_send, 10+LENGTH_END_NODE_DATA);
+  uint16_t out_len = AES_encrypt(data_aes, &node_data_send[3], 7+LENGTH_END_NODE_DATA, (uint8_t *)AES_LORA_KEY);
+
+
+  UART_Add_To_TxQueue(node_data_send, 3+out_len);
 }
 
 void LORA_Send_Synctime(void)
 {
+  /* Phần data không encrypt */
   uint8_t synctime_send[100];
-
   synctime_send[0] = (uint8_t) (GATE_WAY_ADDR >> 8);
   synctime_send[1] = (uint8_t) (GATE_WAY_ADDR & 0xFF);
   synctime_send[2] = (uint8_t) LORA_CHANNEL;
-  synctime_send[3] = END_NODE_SYNC1;
-  synctime_send[4] = END_NODE_SYNC2;
-  synctime_send[5] = (uint8_t) (END_NODE_ADDR >> 8);
-  synctime_send[6] = (uint8_t) (END_NODE_ADDR & 0xFF);
-  synctime_send[7] = KEY_SYNCTIME;
-  synctime_send[8] = 0;
 
-  synctime_send[9+0] = CalCRC(&synctime_send[9], 0);
+  /* Phần data có encrypt */
+  uint8_t data_aes[100];
+  data_aes[0] = END_NODE_SYNC1;
+  data_aes[1] = END_NODE_SYNC2;
+  data_aes[2] = (uint8_t) (END_NODE_ADDR >> 8);
+  data_aes[3] = (uint8_t) (END_NODE_ADDR & 0xFF);
+  data_aes[4] = KEY_SYNCTIME;
+  data_aes[5] = 0;
+  data_aes[6+0] = CalCRC(&data_aes[6], 0);
 
-  UART_Add_To_TxQueue(synctime_send, 10+0);
+  uint16_t out_len = AES_encrypt(data_aes, &synctime_send[3], 7+0, (uint8_t *)AES_LORA_KEY);
+
+  UART_Add_To_TxQueue(synctime_send, 3+out_len);
 }
 
 extern uint8_t synctime_flag;
@@ -267,9 +279,13 @@ void Task_UART_Rx(void)
     // Disable receive data valid interrupt
     USART_IntDisable(USART0, USART_IEN_RXDATAV);
 
+    /* Giải mã tín hiệu nhận được */
+    uint8_t parse_buffer[100];
+    AES_decrypt(UART_Rx_buffer, parse_buffer, UART_RxCount, (uint8_t *)AES_LORA_KEY);
+
     for(int i=0; i < UART_RxCount; i++)
     {
-      UART_Parse_Data(UART_Rx_buffer[i]);
+      UART_Parse_Data(parse_buffer[i]);
     }
 
     // Reset buffer indices

@@ -19,6 +19,8 @@ volatile int reconnect_var = 0;
 volatile uint16_t MQTT_Rx_Count = 0;
 MQTT_Message MQTT_Rx_Buffer[200];
 
+extern lora_end_node_t lora_end_node[];
+
 
 /* STATIC FUNCTION */
 static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message);
@@ -32,7 +34,7 @@ void onSendFailure(void* context, MQTTAsync_failureData* response);
 
 static int messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
-	if(strstr(topicName, "LED_Control") != NULL)
+	if(strstr(topicName, "LED_Control") != NULL || strstr(topicName, MQTT_TOPIC_FAKE_SYNCTIME) != NULL)
 	{
 		memcpy(MQTT_Rx_Buffer[MQTT_Rx_Count].topic, (char *)topicName, topicLen);
 		memcpy(MQTT_Rx_Buffer[MQTT_Rx_Count].payload, (char *)message->payload, message->payloadlen);
@@ -121,11 +123,15 @@ static void onConnect(void* context, MQTTAsync_successData* response)
 	
 	MQTT_Transmit(TOPIC, PAYLOAD);
 	MQTTAsync_reconnect(client_handler);
-	printf("Subscribing to topic %s\nfor client %s using QoS%d\n\n", "LED_Control/#", CLIENTID, QOS);
+	printf("Subscribing to topic %s and %s\nfor client %s using QoS%d\n\n", "LED_Control/#",MQTT_TOPIC_FAKE_SYNCTIME, CLIENTID, QOS);
 	resp_opts.onSuccess = onSubscribe;
 	resp_opts.onFailure = onSubscribeFailure;
 	resp_opts.context = client_handler;
 	if ((rc = MQTTAsync_subscribe(client_handler, "LED_Control/#", QOS, &resp_opts)) != MQTTASYNC_SUCCESS)
+	{
+		printf("Failed to start subscribe, return code %d\n", rc);
+	}
+	if ((rc = MQTTAsync_subscribe(client_handler, MQTT_TOPIC_FAKE_SYNCTIME, QOS, &resp_opts)) != MQTTASYNC_SUCCESS)
 	{
 		printf("Failed to start subscribe, return code %d\n", rc);
 	}
@@ -339,6 +345,25 @@ void MQTT_Task_Receive(void)
 			MQTT_Transmit("Control_Debug", temp);
 
 			printf("\nsettime\n");
+		}
+		else if(strcmp(MQTT_Rx_Buffer[id].topic, MQTT_TOPIC_FAKE_SYNCTIME) == 0)
+		{
+			int arr_temp[10], arr_len;
+			MQTT_Split_String(MQTT_Rx_Buffer[id].payload, arr_temp, &arr_len);
+
+			uint32_t fake_timestamp = arr_temp[0];
+
+			for(int i=0; i < NUM_END_NODE; i++)
+			{
+				LORA_Send_Synctime(fake_timestamp, 1, lora_end_node[i].node_address);
+			}
+			
+
+			char temp[100]="";
+			sprintf(temp, "Synctime success. Timestamp: %d\n", fake_timestamp);
+			MQTT_Transmit("Control_Debug", temp);
+
+			printf("\nFAKE_SYNCTIME\n");
 		}
 		memset(&MQTT_Rx_Buffer[id], 0, sizeof(MQTT_Message));
 		MQTT_Rx_Count--;
