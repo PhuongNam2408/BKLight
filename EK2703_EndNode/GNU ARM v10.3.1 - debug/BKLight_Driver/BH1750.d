@@ -64,7 +64,7 @@ BKLight_Driver/BH1750.o: ../BKLight_Driver/BH1750.c \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_i2c.h
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_i2c.h
 ../BKLight_Driver/BH1750.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
@@ -130,4 +130,4 @@ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_i2c.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_i2c.h:

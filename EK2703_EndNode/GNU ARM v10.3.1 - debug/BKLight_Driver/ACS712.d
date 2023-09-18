@@ -63,11 +63,10 @@ BKLight_Driver/ACS712.o: ../BKLight_Driver/ACS712.c \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_iadc.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_gpio.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_ldma.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_iadc.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_ldma.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h
 ../BKLight_Driver/ACS712.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu.h:
@@ -133,9 +132,8 @@ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu_com
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_iadc.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_gpio.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_ldma.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_iadc.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_ldma.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h:

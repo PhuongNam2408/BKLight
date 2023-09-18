@@ -31,9 +31,6 @@ void ACS712_Init(void)
 
   CMU_ClockEnable(cmuClock_IADC0, true);
 
-  // Use the FSRC0 as the IADC clock so it can run in EM2
-  CMU_ClockSelectSet(cmuClock_IADCCLK, cmuSelect_FSRCO);
-
   // Shutdown between conversions to reduce current
   init_adc.warmup = iadcWarmupNormal;
 
@@ -138,4 +135,19 @@ void ACS712_Init(void)
 
 }
 
+void LDMA_IRQHandler(void)
+{
+  // Clear interrupt flags
+  LDMA_IntClear(1 << IADC_LDMA_CH);
+
+  /*
+   * Toggle GPIO to signal LDMA transfer is complete.  The low/high
+   * time will be NUM_SAMPLES divided by the sampling rate, the
+   * calculations for which are explained above.  For the example
+   * defaults (1024 samples and a sampling rate of 833 ksps), the
+   * low/high time will be around 1.23 ms, subject to FSRCO tuning
+   * accuracy.
+   */
+  //GPIO_PinOutToggle(gpioPortA, 7);
+}
 

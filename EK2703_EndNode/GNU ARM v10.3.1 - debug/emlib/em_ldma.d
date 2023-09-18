@@ -1,5 +1,5 @@
 emlib/em_ldma.o: ../emlib/em_ldma.c \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_ldma.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_ldma.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h \
@@ -65,7 +65,7 @@ emlib/em_ldma.o: ../emlib/em_ldma.c \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_ldma.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_ldma.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h:

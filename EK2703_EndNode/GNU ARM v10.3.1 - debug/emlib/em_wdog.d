@@ -1,5 +1,5 @@
-emlib/em_aes.o: ../emlib/em_aes.c \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_aes.h \
+emlib/em_wdog.o: ../emlib/em_wdog.c \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_wdog.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h \
@@ -51,8 +51,15 @@ emlib/em_aes.o: ../emlib/em_aes.c \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_devinfo.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_prs_signals.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_dma_descriptor.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_ldmaxbar_defines.h
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_aes.h:
+ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_ldmaxbar_defines.h \
+ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_common.h \
+ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h \
+ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core_generic.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_wdog.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h:
@@ -105,3 +112,10 @@ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg2
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_prs_signals.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_dma_descriptor.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_ldmaxbar_defines.h:
+d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_common.h:
+d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h:
+d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core_generic.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h:

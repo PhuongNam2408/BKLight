@@ -171,18 +171,6 @@ void LoRa_sendFixedMessage(uint8_t ADDH, uint8_t ADDL, uint8_t Channel, uint8_t 
 
 
 
-/* Mã hóa AES
-#define AES_KEY    0x3A5C742E
-
-unsigned long AES_encrypt(unsigned long data)
-{
-
-}
-unsigned long AES_decrypt(unsigned long data)
-{
-
-}
-*/
 
 
 

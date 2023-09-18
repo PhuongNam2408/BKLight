@@ -90,7 +90,7 @@ static void onSend(void* context, MQTTAsync_successData* response)
 	MQTTAsync_disconnectOptions opts = MQTTAsync_disconnectOptions_initializer;
 	int rc;
 
-	printf("Message with token value %d delivery confirmed\n", response->token);
+	//printf("Message with token value %d delivery confirmed\n", response->token);
 	
 	if(reconnect_var == 1)
 	{
@@ -351,7 +351,7 @@ void MQTT_Task_Receive(void)
 			int arr_temp[10], arr_len;
 			MQTT_Split_String(MQTT_Rx_Buffer[id].payload, arr_temp, &arr_len);
 
-			uint32_t fake_timestamp = arr_temp[0];
+			uint32_t fake_timestamp = arr_temp[0] - 7*60*60;
 
 			for(int i=0; i < NUM_END_NODE; i++)
 			{

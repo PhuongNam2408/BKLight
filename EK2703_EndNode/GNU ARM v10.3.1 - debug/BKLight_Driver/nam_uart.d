@@ -66,12 +66,11 @@ BKLight_Driver/nam_uart.o: ../BKLight_Driver/nam_uart.c \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h \
  ../BKLight_Driver/lora_data_frame.h ../BKLight_Driver/nam_rtc.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_burtc.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_bus.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_burtc.h \
  ../BKLight_Driver/LoRa_E32.h ../BKLight_Driver/delay.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_chip.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_chip.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h \
  ../BKLight_Driver/aes.h
 ../BKLight_Driver/nam_uart.h:
@@ -142,12 +141,11 @@ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h:
 ../BKLight_Driver/lora_data_frame.h:
 ../BKLight_Driver/nam_rtc.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_burtc.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_bus.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_burtc.h:
 ../BKLight_Driver/LoRa_E32.h:
 ../BKLight_Driver/delay.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_chip.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_chip.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\src/main.h:
 ../BKLight_Driver/aes.h:

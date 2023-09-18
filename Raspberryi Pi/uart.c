@@ -222,14 +222,14 @@ void UART_Parse_Data(uint8_t rx_byte)
 		case ADDH:
 			source_address = rx_byte << 8;
 			read_state = ADDL;
-			printf("addh\n");
+			//printf("addh\n");
 			fflush(stdout);
 			break;
 
 		case ADDL:
 			source_address |= rx_byte;
 			read_state = KEY;
-			printf("addl\n");
+			//printf("addl\n");
 			printf("addr: %d\n", source_address);
 			fflush(stdout);
 			break;
@@ -244,13 +244,13 @@ void UART_Parse_Data(uint8_t rx_byte)
 			{
 				read_state = LENGTH;
 			}
-			printf("key\n");
+			//printf("key\n");
 			fflush(stdout);
 			break;
 
 		case LENGTH:
 			length = rx_byte;
-			printf("length\n");
+			//printf("length\n");
 			fflush(stdout);
 			if(length == 0)
 			{
@@ -269,7 +269,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 
 		case VALUE:
 			value[data_count++] = rx_byte;
-			printf("value %d\n", data_count);
+			//printf("value %d\n", data_count);
 			fflush(stdout);
 			if(data_count >= length)
 			{
@@ -278,7 +278,7 @@ void UART_Parse_Data(uint8_t rx_byte)
 			break;
 
 		case CRC:
-			printf("crc\n");
+			//printf("crc\n");
 			fflush(stdout);
 			crc = rx_byte;
 			read_state = SYNC1;
@@ -299,17 +299,17 @@ void UART_Parse_Data(uint8_t rx_byte)
 									lora_end_node[i].fault = NODE_FAULT_NONE;
 								}
 			
-			printf("node %d\n", source_address);
-			fflush(stdout);
+			//printf("node %d\n", source_address);
+			//fflush(stdout);
 								lora_end_node[i].timestamp = (value[3] << 24) | (value[2] << 16) | (value[1] << 8) | (value[0]);
-			printf("lora_end_node[i].timestamp %d\n",lora_end_node[i].timestamp );
+			//printf("lora_end_node[i].timestamp %d\n",lora_end_node[i].timestamp );
 								lora_end_node[i].led_on_off = value[4];
-			printf("lora_end_node[i].led_on_off %d\n",lora_end_node[i].led_on_off );
+			//printf("lora_end_node[i].led_on_off %d\n",lora_end_node[i].led_on_off );
 								lora_end_node[i].led_dimming = value[5];
-			printf("lora_end_node[i].led_dimming %d\n",lora_end_node[i].led_dimming );
+			//printf("lora_end_node[i].led_dimming %d\n",lora_end_node[i].led_dimming );
 								lora_end_node[i].led_current = (value[7] << 8) | value[6];
-			printf("lora_end_node[i].led_current %d\n",lora_end_node[i].led_current );
-			fflush(stdout);
+			//printf("lora_end_node[i].led_current %d\n",lora_end_node[i].led_current );
+			//fflush(stdout);
 								
 								//Send_MQTT
 								MQTT_LED_Data_t LED_Data;

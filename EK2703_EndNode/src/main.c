@@ -58,7 +58,7 @@
 #include "main.h"
 #include "lora_data_frame.h"
 #include "ACS712.h"
-
+#include "em_wdog.h"
 
 /**************************************************************************//**
  * @brief
@@ -70,12 +70,12 @@ void SYSCLK_Init(void);
 void SysTick_Init(uint32_t ticks);
 uint8_t check_LED_STATE (GPIO_Port_TypeDef port, unsigned int pin);
 
-void check_PIR(void);
 static void PWM_Init(void);
 static void PIR_Init(void);
 static void Nam_Init(void);
 static void Update_time(void);
 static void Task_Read_Sensor(void);
+static void initWDOG(void);
 static void Task_Control_Led(void);
 
 /**************************************************************************//**
@@ -165,6 +165,8 @@ uint32_t sever_control_tick = 0;
 uint8_t led_state_Sever;
 uint8_t led_dimming_Sever;
 
+
+
 int main(void)
 {
   SYSCLK_Init();
@@ -174,15 +176,18 @@ int main(void)
   SysTick_Init(SystemCoreClock / 1000);
   LoRa_E32_Init();
   Init_I2C();
+  ACS712_Init();
   uint8_t bh1750_init_val[1] = {0x10};
   BH1750_Init(0x46,bh1750_init_val,1);
 
   PWM_Init();
   PIR_Init();
   RTC_Init();
-
+  initWDOG();
   Nam_Init();
 
+  /* LED Debug */
+  GPIO_PinModeSet(gpioPortA, 4, gpioModePushPull, 0);
 
 
   while(1)
@@ -197,6 +202,15 @@ int main(void)
      Task_UART_Tx();
 
      Task_UART_Rx();
+
+     /* Các task vụ ngoài lề */
+     static int led_count = 0;
+     if(led_count++ >= 50){
+         GPIO_PinOutToggle(gpioPortA, 4);
+         led_count = 0;
+     }
+     WDOGn_Feed(DEFAULT_WDOG);
+
      Delay_ms(10);
    }
 }
@@ -283,6 +297,21 @@ static void PIR_Init(void)
   CMU_ClockEnable(cmuClock_GPIO, true);
 
   GPIO_PinModeSet(PIR_OUT_PORT, PIR_OUT_PIN, gpioModeInput, 0);
+}
+
+static void initWDOG(void)
+{
+  // Enable clock for the WDOG module; has no effect on xG21
+  CMU_ClockEnable(cmuClock_WDOG0, true);
+
+  // Watchdog Initialize settings
+  WDOG_Init_TypeDef wdogInit = WDOG_INIT_DEFAULT;
+  CMU_ClockSelectSet(cmuClock_WDOG0, cmuSelect_ULFRCO); /* ULFRCO as clock source */
+  wdogInit.debugRun = false;
+  wdogInit.perSel = wdogPeriod_4k; // 4k clock cycles of a 1kHz clock  ~4 seconds period
+
+  // Initializing watchdog with chosen settings
+  WDOGn_Init(DEFAULT_WDOG, &wdogInit);
 }
 
 
@@ -378,11 +407,16 @@ static void Task_Read_Sensor(void)
 
   /* Đọc cảm biến chuyển động */
   Sensor_value.PIR = GPIO_PinInGet(PIR_OUT_PORT, PIR_OUT_PIN);
-  if(Sensor_value.PIR == 1){
-            int countasas=0;
-        }
+
   /* Đọc cảm biến dòng điện */
-  Sensor_value.ACS712 = (uint16_t) ((ACS712_Buffer[0]*3.3/4095) - 2.5)*1000;
+  float ACS712_out = ACS712_Buffer[0]*3.3/4095.0;
+  if(ACS712_out > 2.5){
+      Sensor_value.ACS712 =  (ACS712_out - 2.5)/0.185*1000;
+  }
+  else{
+      Sensor_value.ACS712 =  (2.5 - ACS712_out)/0.185*1000;
+  }
+
 }
 
 static void Task_Control_Led(void)
@@ -510,6 +544,7 @@ static void Task_Control_Led(void)
   else if (node_data.led_state == 1){
       sl_pwm_set_duty_cycle(&sl_pwm_led0, pwm_lut[node_data.led_dimming]);
   }
+  node_data.current_sensor = Sensor_value.ACS712;
 }
 
 void SysTick_Handler(void)

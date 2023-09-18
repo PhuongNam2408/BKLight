@@ -1,5 +1,5 @@
 emlib/em_iadc.o: ../emlib/em_iadc.c \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_iadc.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_iadc.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h \
@@ -52,22 +52,20 @@ emlib/em_iadc.o: ../emlib/em_iadc.c \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_prs_signals.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_dma_descriptor.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_ldmaxbar_defines.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_gpio.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_bus.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_core.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_core_generic.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core_generic.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_common.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu.h \
- D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu_compat.h \
- D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h \
  D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_iadc.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_iadc.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h:
@@ -120,18 +118,16 @@ d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg2
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_prs_signals.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_dma_descriptor.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24_ldmaxbar_defines.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_gpio.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_bus.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_core.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_core_generic.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_core_generic.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_common.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_assert.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_system_generic.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_system_generic.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu.h:
-D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_bus.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_cmu_compat.h:
-D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_gpio.h:
 D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/sli_em_cmu.h:

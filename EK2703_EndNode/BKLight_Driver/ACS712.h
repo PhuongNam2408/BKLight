@@ -40,7 +40,7 @@
 #define IADC_INPUT_0_BUSALLOC     GPIO_BBUSALLOC_BEVEN0_ADC0
 #endif
 
-#define NUM_SAMPLES 1
+#define NUM_SAMPLES 2048
 // Use specified LDMA channel
 #define IADC_LDMA_CH              0
 

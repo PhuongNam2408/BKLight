@@ -53,7 +53,7 @@ int main()
 				Task_UART_Rx();
 				uart_rx_count = 0;
 			}
-			if(uart_tx_count >= 50)
+			if(uart_tx_count >= 200)
 			{//50ms
 				Task_UART_Tx();
 				uart_tx_count = 0;
@@ -63,7 +63,7 @@ int main()
 
 			if(alive_count >= 1000)
 			{//1000ms
-				printf("transmit");
+				//printf("transmit");
 				Check_Node_Alive();
 				MQTT_Send_GW_Alive();
 				//Test_Push_Node_With_HieuVM();
@@ -104,14 +104,14 @@ void Check_Node_Alive(void)
 	for(int i = 0; i < 5; i++)
 	{
 		uint32_t delta_time = (now > lora_end_node[i].timestamp) ? \
-		(now - lora_end_node[i].timestamp) : (lora_end_node[i].timestamp - now);
+		(now - lora_end_node[i].timestamp) : 0;
 		if(delta_time > NODE_TIME_OUT)
 		{
 			lora_end_node[i].fault == NODE_FAULT_LOST_CONNECTION;
 			MQTT_Send_Node_Not_Alive(lora_end_node[i].node_address, NODE_FAULT_LOST_CONNECTION);
 		}
 		else{
-			printf("delta time: %d\n", delta_time);
+			//printf("delta time: %d\n", delta_time);
 		}
 	}
 }

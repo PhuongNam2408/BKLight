@@ -389,7 +389,7 @@ typedef struct {
   }
 #elif (_SILICON_LABS_32B_SERIES > 0)
 /* Default USART Async struct for Series 1 and Series 2 devices */
-#define USART_INITASYNC_DEFAULT                                                                  \
+#define USART_INITASYNC_DEFAULT                                                                    \
   {                                                                                                \
     usartEnable,           /* Enable RX/TX when initialization is complete. */                     \
     0,                     /* Use current configured reference clock for configuring baud rate. */ \

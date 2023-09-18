@@ -1,7 +1,7 @@
 BKLight_Driver/PWM.o: ../BKLight_Driver/PWM.c ../BKLight_Driver/PWM.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_status.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h \
- d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_timer.h \
+ D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_timer.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h \
  d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h \
@@ -69,7 +69,7 @@ BKLight_Driver/PWM.o: ../BKLight_Driver/PWM.c ../BKLight_Driver/PWM.h \
 ../BKLight_Driver/PWM.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_status.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\common\inc\sl_enum.h:
-d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\emlib\inc\em_timer.h:
+D:\STUDY_NAMNP\BKLight\LINUX\Main_Repository\EK2703_EndNode\emlib_inc/em_timer.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\em_device.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\device\siliconlabs\efr32mg24\include\efr32mg24b210f1536im48.h:
 d:\users\hp\simplicitystudio\sdks\gecko_sdk\platform\cmsis\core\include\core_cm33.h:

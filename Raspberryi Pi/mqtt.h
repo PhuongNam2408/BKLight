@@ -52,7 +52,7 @@ typedef struct
 	uint32_t timestamp;
 	uint8_t on_off;
 	uint8_t dimming;
-	uint8_t current_sensor;
+	uint16_t current_sensor;
 }MQTT_LED_Data_t;
 
 typedef struct

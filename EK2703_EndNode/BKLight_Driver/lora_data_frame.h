@@ -25,7 +25,7 @@ typedef struct
 }End_Node_Data_t;
 
 /***************** Define quan trọng nhất của Node ***********************/
-#define END_NODE_ADDR 0002
+#define END_NODE_ADDR 0005
 
 #define	GATE_WAY_ADDR	0xFFFF
 #define LORA_CHANNEL  15

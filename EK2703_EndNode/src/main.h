@@ -33,8 +33,8 @@
 
 
 
-#define PWM_LED_PORT  gpioPortA
-#define PWM_LED_PIN   4
+#define PWM_LED_PORT  gpioPortC
+#define PWM_LED_PIN   0
 
 #define PIR_OUT_PORT  gpioPortC
 #define PIR_OUT_PIN   1
